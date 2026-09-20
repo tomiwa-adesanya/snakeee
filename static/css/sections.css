@@ -1,0 +1,315 @@
+/* The shell: one scrolling column, one panel visible at a time, and enough
+   space at the bottom that the floating nav never covers content.
+
+   */
+
+.shell {
+  position: relative;
+  z-index: var(--z-content);
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-7) var(--space-6);
+  padding-bottom: calc(var(--nav-height) + var(--space-7));
+  opacity: 0;
+  transition: opacity var(--transition-slow);
+}
+
+.shell.is-ready {
+  opacity: 1;
+}
+
+/* While a match is running the shell becomes a fixed-height flex container and
+   the board fills it. Giving the board a viewport-height of its own was what let
+   it overflow into the bar above and the hint below on a large arena. */
+.shell.is-playing {
+  display: flex;
+  overflow: hidden;
+  padding: var(--space-3) var(--space-4);
+}
+
+/* The height chain has to be unbroken from the shell to the canvas, or the
+   arena has no room to be measured against and ends up drawn at its minimum
+   size in the corner of an empty window. The shell is a flex column, the
+   visible panel stretches to fill it, and the board fills the panel. Every
+   link needs min-height: 0, because a flex item defaults to not shrinking
+   below its content. */
+.shell.is-playing .panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.panel {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.panel-wide {
+  max-width: var(--content-max-wide);
+}
+
+.panel-head {
+  margin-bottom: var(--space-6);
+}
+
+.panel-head h1 {
+  margin-top: var(--space-1);
+}
+
+.panel-head .lede {
+  margin-top: var(--space-3);
+  max-width: 56ch;
+}
+
+/* Used on the screens reached from somewhere else, where the header needs to be
+   visibly separate from the controls under it. */
+.panel-head-bordered {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.screen-top {
+  margin-bottom: var(--space-5);
+}
+
+/* Vertical rhythm between blocks inside a screen. Every gap in the interface
+   comes from this or from a token, never from an ad hoc margin. */
+.stack > * + * {
+  margin-top: var(--space-5);
+}
+
+.stack-tight > * + * {
+  margin-top: var(--space-3);
+}
+
+.section-title {
+  margin-bottom: var(--space-3);
+  margin-top: 0;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.section-title-spaced {
+  margin-top: var(--space-7);
+}
+
+.card {
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-subtle);
+  border: none;
+  margin: var(--space-6) 0;
+}
+
+/* -- home ------------------------------------------------------------------ */
+
+.home {
+  padding-top: var(--space-6);
+}
+
+.wordmark {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-tagline {
+  margin-top: var(--space-2);
+  color: var(--accent-text);
+  font-size: var(--text-lg);
+}
+
+.home-lede {
+  margin-top: var(--space-5);
+  max-width: 54ch;
+  color: var(--text-secondary);
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.home-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-7);
+}
+
+.point {
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.point h3 {
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+}
+
+.point p {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* -- settings -------------------------------------------------------------- */
+
+.field {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+.field + .field {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.field-label {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.field-note {
+  grid-column: 2;
+  margin-top: calc(var(--space-1) * -1);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.field input[type="text"] {
+  max-width: 260px;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.swatch:hover {
+  transform: scale(1.12);
+}
+
+/* A ring outside the swatch rather than a border inside it. A 2px border eats
+   into a 28px circle and, on a bright colour, reads as part of the colour. The
+   gap of page background between the swatch and the ring is what makes it a
+   ring rather than an edge. */
+.swatch.is-selected {
+  transform: scale(1.14);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 0 0 2px var(--bg-surface),
+    0 0 0 4px var(--text-primary);
+}
+
+.swatch.is-selected:hover {
+  transform: scale(1.14);
+}
+
+.save-state {
+  min-height: 18px;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.save-state.is-error {
+  color: var(--danger);
+}
+
+/* -- about ----------------------------------------------------------------- */
+
+.facts {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: var(--space-3) var(--space-4);
+  margin: 0;
+}
+
+.facts dt {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 720px) {
+  .shell {
+    padding: var(--space-6) var(--space-4);
+    padding-bottom: calc(var(--nav-height) + var(--space-6));
+  }
+
+  .field,
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .field-note,
+  .facts dd {
+    grid-column: 1;
+  }
+}
+
+/* -- choosing your colour --------------------------------------------------- */
+
+.colour-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* A drawing of the snake itself, in the colour just picked. A ring around a
+   swatch is easy to lose among twelve saturated colours; a snake is not. */
+.colour-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.colour-preview canvas {
+  display: block;
+}
+
+.colour-preview-caption {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}

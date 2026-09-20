@@ -1,0 +1,1215 @@
+/* Play screens: mode chooser, setups, rule editor, board, modals.
+
+   The chrome stays neutral; the arena
+   inside the canvas is the only saturated surface on screen. */
+
+/* -- mode chooser ---------------------------------------------------------- */
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-4);
+}
+
+.mode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  text-align: left;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: background var(--transition), border-color var(--transition),
+    transform var(--transition);
+}
+
+.mode:not(.is-locked):hover {
+  background: var(--bg-raised);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.mode-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--accent-subtle);
+  border-radius: var(--radius-md);
+}
+
+.mode h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.mode p {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.mode-go {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  color: var(--accent-text);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mode.is-locked {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.mode.is-locked .mode-icon {
+  background: var(--bg-raised);
+}
+
+.mode.is-locked .mode-go {
+  color: var(--text-tertiary);
+}
+
+/* -- setups ---------------------------------------------------------------- */
+
+.preset-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--space-3);
+}
+
+.preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.preset-card:hover {
+  background: var(--bg-raised);
+}
+
+.preset-card.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.preset-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.preset-card-head h3 {
+  font-size: var(--text-base);
+}
+
+.preset-tag {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.preset-delete {
+  margin-left: auto;
+  padding: 0 var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  transition: color var(--transition);
+}
+
+.preset-delete:hover {
+  color: var(--danger);
+}
+
+.preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.chip {
+  padding: 2px var(--space-2);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+}
+
+.setup-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.setup-best {
+  margin-right: auto;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.setup-best .mono {
+  color: var(--text-primary);
+  font-size: var(--text-lg);
+}
+
+/* -- rule editor ----------------------------------------------------------- */
+
+.rule-editor {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.rule-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--bg-sunken);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.rule-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  transition: background var(--transition), color var(--transition);
+}
+
+.rule-tab:hover {
+  background: var(--bg-raised);
+  color: var(--text-primary);
+}
+
+.rule-tab.is-selected {
+  background: var(--accent);
+  color: var(--text-inverse);
+}
+
+.rule-tab.is-later {
+  color: var(--text-tertiary);
+}
+
+.rule-panel {
+  padding: var(--space-2) var(--space-5);
+}
+
+.rule {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  padding: var(--space-4) 0;
+}
+
+.rule + .rule {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.rule-label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.rule-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.rule-slider {
+  flex: 1 1 auto;
+  min-width: 100px;
+}
+
+.rule-number {
+  flex: 0 0 auto;
+  width: 74px;
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+.rule-unit {
+  flex: 0 0 auto;
+  min-width: 46px;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.rule-controls .select,
+.rule-controls > input[type="text"] {
+  min-width: 190px;
+}
+
+.rule.is-inactive {
+  opacity: 0.4;
+}
+
+.rule.has-error .rule-number {
+  border-color: var(--danger);
+}
+
+.rule-badge {
+  padding: 1px var(--space-2);
+  background: var(--bg-raised);
+  border-radius: var(--radius-pill);
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* A collapsible subsection inside a tab. Collapsed to start: the point is that
+   opening a tab shows a handful of options rather than twenty. */
+.rule-section {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.rule-section-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4) 0;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  text-align: left;
+  transition: color var(--transition);
+}
+
+.rule-section-toggle:hover {
+  color: var(--text-primary);
+}
+
+/* Rotated rather than swapped for a second glyph, so the open and shut states
+   are visibly the same control in two positions. */
+.rule-caret {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid currentColor;
+  transition: transform var(--transition);
+}
+
+.rule-section.is-open .rule-caret {
+  transform: rotate(90deg);
+}
+
+/* How many options are inside, so a section that is worth opening can be told
+   from one that is not without opening it. */
+.rule-section-count {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.rule-section-body .rule:first-child {
+  padding-top: 0;
+}
+
+.rule-section-body .rule:last-child {
+  padding-bottom: var(--space-4);
+}
+
+/* Locked by another setting rather than not built yet, which is why this is
+   not the "Planned" treatment: the control is real, it is simply not free. */
+.rule.is-locked .rule-label,
+.rule.is-locked .rule-controls {
+  opacity: 0.55;
+}
+
+.rule-reason {
+  grid-column: 2;
+  margin: 0;
+  color: var(--accent);
+  font-size: var(--text-xs);
+}
+
+.rule-help,
+.rule-error {
+  grid-column: 2;
+  margin: 0;
+  font-size: var(--text-xs);
+}
+
+.rule-help {
+  color: var(--text-tertiary);
+}
+
+.rule-error {
+  color: var(--danger);
+}
+
+.editor-footer {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* Saving a setup and starting a game are different intentions, so they are
+   separated rather than being three controls in a row. */
+.play-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.save-block {
+  flex: 1 1 320px;
+}
+
+.inactive-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.speed-note {
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.save-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.save-row input[type="text"] {
+  flex: 1 1 200px;
+  max-width: 300px;
+}
+
+.notice {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.notice-error {
+  color: var(--danger);
+  background: rgba(216, 83, 79, 0.08);
+  border: 1px solid rgba(216, 83, 79, 0.35);
+}
+
+.status-line {
+  min-height: 18px;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.status-line.is-error {
+  color: var(--danger);
+}
+
+/* -- board ----------------------------------------------------------------- */
+
+/* The board owns the viewport while a match runs. It is a fixed three-row grid
+   so nothing can overlap: bar, arena, hint. */
+.board {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--space-2);
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hud {
+  position: relative;
+  z-index: var(--z-hud);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.hud-stat {
+  display: grid;
+  gap: 2px;
+}
+
+.hud-label {
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hud-value {
+  font-size: var(--text-lg);
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.hud-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.hud .button {
+  min-height: 32px;
+  padding: var(--space-1) var(--space-4);
+}
+
+.board-surface {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.board-surface canvas {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  outline: none;
+}
+
+.paused-note {
+  position: absolute;
+  padding: var(--space-3) var(--space-5);
+  background: var(--bg-scrim);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition);
+}
+
+.hud.is-paused ~ .board-surface .paused-note {
+  opacity: 1;
+}
+
+.controls-note {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  text-align: right;
+}
+
+/* The hint is the first thing to go when the bar runs out of room; the buttons
+   and the numbers are not. */
+@media (max-width: 1000px) {
+  .controls-note {
+    display: none;
+  }
+}
+
+/* -- modals ---------------------------------------------------------------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: var(--bg-scrim);
+}
+
+.modal-card {
+  width: min(440px, 100%);
+  padding: var(--space-6);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-card h2 {
+  font-size: var(--text-xl);
+}
+
+.modal-lede {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.modal-stat {
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.modal-stat .hud-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.modal-stat .mono {
+  font-size: var(--text-lg);
+}
+
+.new-best {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(47, 174, 124, 0.1);
+  border-radius: var(--radius-sm);
+  color: var(--success);
+  font-size: var(--text-sm);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+@media (max-width: 720px) {
+  .rule {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rule-help,
+  .rule-error {
+    grid-column: 1;
+  }
+
+  .hud {
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .hud-actions {
+    margin-left: auto;
+  }
+}
+
+/* -- rooms ----------------------------------------------------------------- */
+
+.mode-static {
+  cursor: default;
+}
+
+.mode-static:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+  transform: none;
+}
+
+.mode-static .button {
+  margin-top: var(--space-4);
+}
+
+.address-line {
+  color: var(--accent-text);
+  font-size: var(--text-base);
+  word-spacing: var(--space-4);
+}
+
+.players {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.player + .player {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.player-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.player-name {
+  font-size: var(--text-sm);
+}
+
+.player-tag {
+  padding: 1px var(--space-2);
+  background: var(--bg-raised);
+  border-radius: var(--radius-pill);
+  color: var(--text-tertiary);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.player-latency {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.player-ready {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.player-ready.is-ready {
+  color: var(--success);
+}
+
+.notice-info {
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+/* -- the room list --------------------------------------------------------- */
+
+/* Deliberately the same shape as .players: both are a list of rows in a card,
+   and two nearly identical lists that do not line up read as a mistake. */
+
+.rooms {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.rooms:empty {
+  display: none;
+}
+
+.room {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.room + .room {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.room-name {
+  font-size: var(--text-sm);
+  /* The name is the only part that can be long, so it is the only part
+     allowed to shrink. Without this a long name pushes the count and the
+     button off the row. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-host {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.room-count {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+.room-status {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.room-join {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+/* Watch sits beside Join, and is the only button on a room that is full or
+   already playing. Quieter than Join on purpose: on a room somebody can play
+   in, playing is the offer and watching is the alternative. */
+.room-watch {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+/* -- watching -------------------------------------------------------------- */
+
+/* A checkbox and its label on one line, for a choice made before a join
+   rather than one made in the rule editor. */
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.watching {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.watch-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* One per player, and the one being watched is marked. A spectator is on
+   exactly one stream at a time, so exactly one of these is ever current. */
+.watch-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.watch-choice:hover {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.watch-choice.is-watched {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.watch-choice[disabled] {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.spectator-tag {
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+}
+
+/* -- modal close ----------------------------------------------------------- */
+
+.modal-card {
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  line-height: 1;
+  transition: background var(--transition), color var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.modal-hint {
+  margin-top: var(--space-4);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  text-align: right;
+}
+
+/* -- join code ------------------------------------------------------------- */
+
+.code-block {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.join-code {
+  padding: var(--space-3) var(--space-5);
+  background: var(--bg-input);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  color: var(--accent-text);
+  font-size: var(--text-2xl);
+  letter-spacing: 0.16em;
+}
+
+.code-input {
+  font-size: var(--text-lg);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.advanced {
+  margin-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-3);
+}
+
+.advanced summary {
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  list-style: none;
+}
+
+.advanced summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced summary:hover {
+  color: var(--text-secondary);
+}
+
+.advanced .address-line {
+  margin-top: var(--space-3);
+}
+
+/* -- the shared match ------------------------------------------------------ */
+
+/* The leaderboard sits in the HUD rather than over the arena. Anything drawn on
+   top of the board is something a snake can hide behind. */
+/* What is currently acting on you, with the time left on it.
+   An effect whose end the player cannot see reads as a bug rather than as a
+   mechanic, which is the whole reason this exists. */
+.effects {
+  display: grid;
+  gap: 4px;
+}
+
+.effect {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: var(--text-sm);
+}
+
+.effect-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-pill);
+}
+
+.effect-left {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+/* Only ever on screen when there is more than one arena, which is why it is
+   hidden in the markup and shown by the code rather than the other way round. */
+.minimap {
+  display: grid;
+  gap: 4px;
+}
+
+.minimap canvas {
+  width: 100%;
+  max-width: 132px;
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
+/* A square of the colour of the arena that player is in. Small, because it is
+   an answer to a question that is only sometimes being asked. */
+.standing-arena {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.standings {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-height: 84px;
+  overflow-y: auto;
+}
+
+.standing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.standing.is-you {
+  background: var(--accent-subtle);
+  color: var(--text-primary);
+}
+
+.standing.is-out {
+  opacity: 0.5;
+}
+
+.standing-rank {
+  width: 14px;
+  color: var(--text-tertiary);
+}
+
+.standing-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.standing-score,
+.standing-kills,
+.standing-lives {
+  color: var(--text-tertiary);
+}
+
+.standing-score {
+  color: var(--text-primary);
+}
+
+.standings-final {
+  max-height: none;
+  margin: var(--space-3) 0;
+  gap: var(--space-1);
+}
+
+.standings-final .standing {
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Said only when there is something to say. A readout that is permanently on
+   screen and permanently fine is one nobody reads on the day it stops being
+   fine. */
+.link-warning {
+  margin: 0;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+}
+
+.match-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--bg-scrim);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.match-overlay-title {
+  margin: 0;
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.match-overlay-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.modal-title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* The host's way into the rule editor from the lobby. Inside the card that
+   already lists the rules, so the thing that changes them sits with them. */
+[data-lobby-edit-rules] {
+  margin-top: var(--space-3);
+}
+
+/* Two buttons, not two rows. The editor footer is a single-column grid because
+   the single player setup stacks a save block above a play row; borrowing it
+   for a plain pair of buttons stretched both across the panel. */
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+/* A note that introduces the block below it, rather than one that trails the
+   control above it. Field notes are tucked up against what they annotate, which
+   is wrong when the thing being annotated comes next. */
+.field-note-lead {
+  margin-bottom: var(--space-4);
+}
+
+.notice-spaced {
+  margin-top: var(--space-4);
+}
+
+/* What just happened, top centre of the arena.
+   Three lines at most, and it does not take clicks: a snake can be underneath
+   it and the player still needs to be able to steer through that space. */
+.event-feed {
+  position: absolute;
+  top: var(--space-3);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+/* Deliberately see-through. This sits on top of playable cells, and a snake
+   crossing underneath it has to stay visible: a feed that hides the thing it is
+   reporting on would be worse than no feed. The shadow is what keeps the text
+   readable once the background stops doing that job. */
+/* Where it happened, when where it happened is a question. Dimmer than the
+   names, because the names are the sentence and this is the footnote. */
+.event-where {
+  opacity: 0.75;
+}
+
+.event-line {
+  margin: 0;
+  padding: 1px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: rgba(10, 12, 16, 0.45);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.35;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  animation: event-in var(--transition) ease-out;
+}
+
+.event-name {
+  font-weight: 600;
+}
+
+@keyframes event-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Saved setups, above the room's rule editor.
+   Loading one fills the editor and changes nothing yet: the room's rules only
+   move when Save rules is pressed. That separation is deliberate, so picking a
+   setup to look at is not the same act as imposing it on everybody in the
+   room. */
+.setup-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.setup-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.setup-save {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.setup-save .input {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.preset-chips .chip.is-loaded {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}

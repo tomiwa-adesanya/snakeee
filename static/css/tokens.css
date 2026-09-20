@@ -1,0 +1,112 @@
+/* Design tokens.
+   Dark only, single theme, by decision. Adding a second theme means every
+   token below needs a value in it, so it is a deliberate change rather than
+   an incremental one.
+
+   Everything visual is a token. The accent appears in one place, so changing
+   the colour of the whole interface is one line. */
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/static/fonts/SpaceGrotesk-Variable.ttf') format('truetype');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/static/fonts/JetBrainsMono-Variable.ttf') format('truetype');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Surfaces. Each step up is a surface that sits on top of the one before. */
+  --bg-root: #0b0e13;
+  --bg-sunken: #080a0e;
+  --bg-surface: #111620;
+  --bg-raised: #171d29;
+  --bg-hover: #1d2432;
+  --bg-input: #0d1118;
+  --bg-scrim: rgba(6, 8, 12, 0.72);
+
+  --border-subtle: #1c2331;
+  --border: #263041;
+  --border-strong: #33405a;
+
+  --text-primary: #e8ecf3;
+  --text-secondary: #98a3b6;
+  --text-tertiary: #66718a;
+  --text-inverse: #ffffff;
+
+  /* Accent: a deep ocean blue. The arena palette is green, so keeping the
+     chrome blue stops the two competing for attention.
+     For the green variant instead, swap these five values for:
+       #106b4f  #0c5540  rgba(16,107,79,0.14)  rgba(16,107,79,0.30)  #14805f */
+  --accent: #1a4f9c;
+  --accent-hover: #17427f;
+  --accent-subtle: rgba(26, 79, 156, 0.14);
+  --accent-glow: rgba(26, 79, 156, 0.30);
+  --accent-text: #6ea8ff;
+
+  --success: #2fae7c;
+  --warning: #d9a13c;
+  --danger: #d8534f;
+  --info: #4d8fd6;
+
+  --scroll-thumb: #263041;
+  --scroll-thumb-hover: #33405a;
+
+  --font-ui: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Type scale. One ratio, so headings relate to each other. */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 23px;
+  --text-2xl: 30px;
+  --text-3xl: 40px;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.55;
+
+  /* Spacing. Multiples of 4, used for every margin, padding and gap in the
+     interface. Nothing uses an arbitrary pixel value. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+
+  --transition: 0.15s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Layering, in one place. Overlapping chrome was a real bug; guessing at
+     z-index values per component is how it happens. */
+  --z-content: 1;
+  --z-hud: 10;
+  --z-nav: 20;
+  --z-modal: 40;
+  --z-splash: 60;
+
+  --nav-height: 76px;
+  --content-max: 860px;
+  --content-max-wide: 1080px;
+}

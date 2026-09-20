@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loading</title>
+  <link rel="stylesheet" href="/static/css/tokens.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/splash.css">
+  <link rel="stylesheet" href="/static/css/sections.css">
+  <link rel="stylesheet" href="/static/css/game.css">
+  <link rel="stylesheet" href="/static/css/nav.css">
+</head>
+<body>
+
+  <div class="splash" data-splash>
+    <canvas class="splash-canvas"></canvas>
+    <p class="splash-skip">Press any key to skip</p>
+  </div>
+
+  <main class="shell" data-shell>
+
+    <!-- Home ------------------------------------------------------------- -->
+    <section class="panel" data-panel="home" hidden>
+      <div class="home">
+        <h1 class="wordmark" data-app-name>Loading</h1>
+        <p class="home-tagline" data-tagline></p>
+
+        <p class="home-lede">Play on your own, or host a room and let everyone on
+          the same WiFi join. No account, no server, no internet connection.</p>
+
+        <div class="home-actions">
+          <button class="button button-primary button-lg" type="button" data-home-play>
+            Play
+          </button>
+          <button class="button button-lg" type="button" data-home-settings>
+            Settings
+          </button>
+        </div>
+
+        <div class="home-points">
+          <div class="point">
+            <h3>Runs offline</h3>
+            <p>Nothing leaves your machine or your local network. There is
+              nothing to sign up for.</p>
+          </div>
+          <div class="point">
+            <h3>The host makes the rules</h3>
+            <p>Arena size, speed, edges and more. Save a setup and reuse it.</p>
+          </div>
+          <div class="point">
+            <h3>Open source</h3>
+            <p>MIT licensed. Clone it, read it, change it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Play ------------------------------------------------------------- -->
+    <section class="panel panel-wide" data-panel="play" hidden>
+
+      <div data-screen="modes">
+        <header class="panel-head">
+          <span class="eyebrow">Play</span>
+          <h1>Choose a mode</h1>
+        </header>
+
+        <div class="modes">
+          <button class="mode" type="button" data-mode-solo>
+            <span class="mode-icon">
+              <img src="/static/icons/play_white_20.png" alt="" width="20" height="20">
+            </span>
+            <h2>Single player</h2>
+            <p>One snake, one arena, your rules. Chase a personal best.</p>
+            <span class="mode-go">Pick a setup</span>
+          </button>
+
+          <button class="mode" type="button" data-mode-multi>
+            <span class="mode-icon">
+              <img src="/static/icons/players_white_16.png" alt="" width="16" height="16">
+            </span>
+            <h2>Multiplayer</h2>
+            <p>Host a room on your network and share the address, or join one.
+              Up to twelve players, and the host sets the rules.</p>
+            <span class="mode-go">Host or join</span>
+          </button>
+        </div>
+      </div>
+
+      <div data-screen="solo" hidden>
+        <div class="screen-top">
+          <button class="button button-back" type="button" data-back-modes>
+            Back to modes
+          </button>
+        </div>
+
+        <header class="panel-head panel-head-bordered">
+          <span class="eyebrow">Single player</span>
+          <h1>Pick a setup</h1>
+          <p class="lede">Each setup is a full set of rules. Adjust anything
+            under Customise, and save your own.</p>
+        </header>
+
+        <div class="preset-cards" data-preset-cards></div>
+        <p class="status-line" data-preset-status></p>
+
+        <p class="section-title section-title-spaced">Your snake</p>
+        <div class="card">
+          <div class="colour-picker" data-solo-colour></div>
+          <p class="save-state" data-solo-colour-status></p>
+        </div>
+
+        <div class="setup-footer">
+          <p class="setup-best">
+            Your best here: <span class="mono" data-setup-best>0</span>
+          </p>
+          <button class="button" type="button" data-open-customise>Customise</button>
+          <button class="button button-primary button-lg" type="button"
+                  data-solo-start>Play</button>
+        </div>
+
+        <p class="notice notice-error" data-solo-error hidden></p>
+      </div>
+
+      <div data-screen="customise" hidden>
+        <div class="screen-top">
+          <button class="button button-back" type="button" data-back-solo>
+            Back to setups
+          </button>
+        </div>
+
+        <header class="panel-head panel-head-bordered">
+          <span class="eyebrow">Single player</span>
+          <h1>Customise</h1>
+          <p class="lede">One group of rules at a time. Changes apply to the
+            next game.</p>
+        </header>
+
+        <div class="rule-editor" data-rules-editor></div>
+
+        <div class="editor-footer">
+          <label class="inactive-toggle">
+            <input type="checkbox" data-show-inactive>
+            <span>Show options that are not implemented yet</span>
+          </label>
+
+          <p class="speed-note">
+            A short snake moves <span class="mono" data-speed-fast>0</span> times
+            a second here. At full length it slows to
+            <span class="mono" data-speed-slow>0</span>.
+          </p>
+        </div>
+
+        <div class="play-footer">
+          <div class="save-block">
+            <p class="section-title">Keep these rules</p>
+            <div class="save-row">
+              <input type="text" maxlength="48" placeholder="Name this setup"
+                     data-preset-name autocomplete="off">
+              <button class="button" type="button" data-preset-save>Save</button>
+            </div>
+            <p class="status-line" data-preset-status></p>
+          </div>
+
+          <button class="button button-primary button-lg" type="button"
+                  data-customise-start>Play</button>
+        </div>
+      </div>
+
+      <div data-screen="multi" hidden>
+        <div class="screen-top">
+          <button class="button button-back" type="button" data-back-modes-multi>
+            Back to modes
+          </button>
+        </div>
+
+        <header class="panel-head panel-head-bordered">
+          <span class="eyebrow">Multiplayer</span>
+          <h1>Rooms</h1>
+          <p class="lede">Everything stays on your local network. Public rooms
+            appear below on their own; a private room needs the code its host
+            reads out.</p>
+        </header>
+
+        <p class="notice notice-error" data-multi-notice hidden></p>
+
+        <div data-multi="choice">
+          <div class="modes">
+            <div class="mode mode-static">
+              <h2>Host a room</h2>
+              <p>Opens a listener on this machine using the rules of your
+                selected setup. You get an address to share.</p>
+              <button class="button button-primary" type="button" data-multi-host>
+                Open a room
+              </button>
+            </div>
+
+            <div class="mode mode-static">
+              <h2>Join a room</h2>
+              <p>Type the code the host reads out. Your name and colour come
+                from Settings.</p>
+              <button class="button" type="button" data-multi-open-join>
+                Enter a code
+              </button>
+            </div>
+          </div>
+
+          <p class="section-title section-title-spaced">Rooms on your network</p>
+          <div class="card">
+            <div class="rooms" data-multi-rooms></div>
+            <p class="field-note" data-multi-rooms-note hidden></p>
+          </div>
+        </div>
+
+        <div data-multi="join" hidden>
+          <div class="card stack-tight">
+            <p class="section-title">Room code</p>
+            <div class="save-row">
+              <input type="text" class="code-input mono" placeholder="7KMDH"
+                     maxlength="16" data-multi-address autocomplete="off"
+                     spellcheck="false" autocapitalize="characters">
+              <button class="button button-primary" type="button" data-multi-join>
+                Join
+              </button>
+            </div>
+            <p class="field-note">Case and dashes do not matter. An address such
+              as 192.168.1.24 works here too, with an optional port after a
+              colon.</p>
+
+            <label class="check-row">
+              <input type="checkbox" data-multi-spectate>
+              <span>Watch without playing</span>
+            </label>
+            <p class="field-note">A spectator takes no seat, so a full room or
+              a match already under way can still be watched. You follow one
+              player and see what they see.</p>
+
+            <div data-multi-colours hidden>
+              <p class="section-title">Free colours</p>
+              <div class="swatches" data-multi-swatches></div>
+              <p class="field-note">Pick one to join with it.</p>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="button button-quiet" type="button" data-multi-back>
+              Back
+            </button>
+          </div>
+        </div>
+
+        <div data-multi="lobby" hidden>
+          <div class="card">
+            <p class="section-title" data-lobby-title>Your room</p>
+
+            <div class="code-block" data-lobby-code-block hidden>
+              <span class="join-code mono" data-lobby-code></span>
+              <button class="button" type="button" data-lobby-copy>Copy</button>
+            </div>
+
+            <p class="field-note" data-lobby-chosen hidden></p>
+
+            <p class="field-note" data-lobby-host-only hidden>Read the code out
+              to the other players. Windows may ask you to allow the game through
+              the firewall the first time; allow it on private networks.</p>
+
+            <p class="field-note" data-lobby-visibility hidden></p>
+
+            <details class="advanced" data-lobby-advanced hidden>
+              <summary>Addresses</summary>
+              <p class="mono address-line" data-lobby-addresses></p>
+              <p class="field-note">Use one of these if a code does not work,
+                which usually means the two machines are on different networks.</p>
+            </details>
+
+            <p class="mono address-line" data-lobby-connected hidden></p>
+          </div>
+
+          <p class="section-title section-title-spaced">Players</p>
+          <div class="card">
+            <div class="players" data-lobby-players></div>
+            <p class="field-note" data-lobby-capacity></p>
+          </div>
+
+          <div data-lobby-watchers hidden>
+            <p class="section-title section-title-spaced">Watching</p>
+            <div class="card">
+              <div class="players" data-lobby-spectators></div>
+              <p class="field-note" data-lobby-spectator-note></p>
+            </div>
+          </div>
+
+          <p class="section-title section-title-spaced">Rules</p>
+          <div class="card">
+            <div class="preset-chips" data-lobby-rules></div>
+            <button class="button" type="button" data-lobby-edit-rules hidden>
+              Edit rules
+            </button>
+          </div>
+
+          <div class="setup-footer">
+            <p class="setup-best" data-lobby-start-note></p>
+            <button class="button" type="button" data-lobby-leave>Leave room</button>
+            <button class="button button-primary" type="button" data-lobby-ready>
+              I'm ready
+            </button>
+            <button class="button button-primary" type="button" data-lobby-start
+                    hidden>
+              Start match
+            </button>
+          </div>
+        </div>
+
+        <div data-multi="rules" hidden>
+          <p class="section-title">Room rules</p>
+          <p class="field-note field-note-lead">Everyone in the room plays by
+            these. They reach the other players as soon as you save.</p>
+
+          <div class="card setup-bar">
+            <div class="setup-bar-row">
+              <span class="field-label">Load a saved setup</span>
+              <div class="preset-chips" data-room-presets></div>
+            </div>
+
+            <div class="setup-bar-row">
+              <label class="field-label" for="room-setup-name">
+                Save these as
+              </label>
+              <div class="setup-save">
+                <input class="input" id="room-setup-name" type="text"
+                       maxlength="48" placeholder="Name this setup"
+                       data-room-setup-name>
+                <button class="button" type="button" data-room-setup-save>
+                  Save setup
+                </button>
+              </div>
+            </div>
+
+            <p class="save-state" data-room-setup-status></p>
+          </div>
+
+          <div class="rule-editor" data-room-rules-editor></div>
+
+          <p class="notice notice-error notice-spaced"
+             data-room-rules-notice hidden></p>
+
+          <div class="form-actions">
+            <button class="button" type="button" data-room-rules-cancel>
+              Cancel
+            </button>
+            <button class="button button-primary" type="button"
+                    data-room-rules-save>
+              Save rules
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="board" data-screen="board" data-solo-board hidden>
+        <div class="hud" data-solo-hud>
+          <div class="hud-stat">
+            <span class="hud-label">Score</span>
+            <span class="hud-value mono" data-hud-score>0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">Length</span>
+            <span class="hud-value mono" data-hud-length>0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">Moves/s</span>
+            <span class="hud-value mono" data-hud-speed>0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">Best</span>
+            <span class="hud-value mono" data-hud-best>0</span>
+          </div>
+          <div class="effects" data-solo-effects hidden></div>
+          <p class="controls-note">
+            Arrows or WASD to steer. P pauses, R restarts, F11 fullscreen.
+          </p>
+
+          <div class="hud-actions">
+            <button class="button" type="button" data-solo-pause>Pause</button>
+            <button class="button" type="button" data-solo-quit>Quit</button>
+          </div>
+        </div>
+
+        <div class="board-surface">
+          <canvas data-solo-canvas tabindex="0"></canvas>
+          <p class="paused-note">Paused. Press P to resume.</p>
+        </div>
+      </div>
+
+      <div class="board" data-screen="match" hidden>
+        <div class="hud" data-match-hud>
+          <div class="hud-stat">
+            <span class="hud-label">Score</span>
+            <span class="hud-value mono" data-match-score>0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">Kills</span>
+            <span class="hud-value mono" data-match-kills>0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">Length</span>
+            <span class="hud-value mono" data-match-length>0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">Lives</span>
+            <span class="hud-value mono" data-match-lives>--</span>
+          </div>
+          <div class="hud-stat" data-match-clock hidden>
+            <span class="hud-label">Left</span>
+            <span class="hud-value mono" data-match-clock-value>0:00</span>
+          </div>
+
+          <div class="watching" data-match-watching hidden>
+            <span class="hud-label">Watching</span>
+            <div class="watch-choices" data-match-watch-choices></div>
+          </div>
+
+          <div class="effects" data-match-effects hidden></div>
+
+          <div class="minimap" data-match-minimap hidden>
+            <span class="hud-label">Arenas</span>
+            <canvas data-match-minimap-canvas></canvas>
+          </div>
+
+          <div class="standings" data-match-board></div>
+
+          <p class="notice notice-error link-warning" data-match-link hidden></p>
+
+          <p class="controls-note" data-match-controls-note>
+            Arrows or WASD to steer. F11 fullscreen.
+          </p>
+
+          <div class="hud-actions">
+            <button class="button" type="button" data-match-leave>Leave</button>
+          </div>
+        </div>
+
+        <div class="board-surface">
+          <canvas data-match-canvas tabindex="0"></canvas>
+          <div class="event-feed" data-match-events></div>
+          <div class="match-overlay" data-match-overlay hidden>
+            <p class="match-overlay-title" data-match-overlay-title></p>
+            <p class="match-overlay-note" data-match-overlay-note></p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Settings --------------------------------------------------------- -->
+    <section class="panel" data-panel="settings" hidden>
+      <header class="panel-head">
+        <span class="eyebrow">Settings</span>
+        <h1>You</h1>
+        <p class="lede">Your name and your snake, in every game you play.
+          Saved on this machine as you type.</p>
+      </header>
+
+      <div class="card">
+        <form data-profile-form>
+          <div class="field">
+            <label class="field-label" for="profile-username">Username</label>
+            <input type="text" id="profile-username" name="username" maxlength="16"
+                   autocomplete="off">
+            <p class="field-note">Up to 16 characters.</p>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Snake colour</span>
+            <div class="colour-picker" data-colour-picker></div>
+          </div>
+        </form>
+        <p class="save-state" data-profile-status></p>
+      </div>
+
+      <p class="section-title section-title-spaced">Game rules</p>
+      <div class="card">
+        <p class="lede">Rules belong to a match, not to you, so they live with
+          the setup you pick under Play. That way a saved setup reproduces the
+          same game every time.</p>
+      </div>
+    </section>
+
+    <!-- About ------------------------------------------------------------ -->
+    <section class="panel" data-panel="about" hidden>
+      <header class="panel-head">
+        <span class="eyebrow">About</span>
+        <h1 data-app-name>Loading</h1>
+        <p class="lede">Open source, offline, and yours to change.</p>
+      </header>
+
+      <div class="card">
+        <dl class="facts">
+          <dt>Version</dt>
+          <dd class="mono" data-app-version></dd>
+          <dt>Licence</dt>
+          <dd>MIT</dd>
+          <dt>Fullscreen</dt>
+          <dd>Press F11</dd>
+        </dl>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modals ------------------------------------------------------------- -->
+
+  <div class="modal" data-preset-confirm hidden>
+    <div class="modal-card" role="dialog" aria-modal="true"
+         aria-labelledby="preset-confirm-title">
+      <h2 id="preset-confirm-title">Delete setup</h2>
+      <p class="modal-lede">
+        <span data-preset-confirm-name></span> will be removed from this machine.
+        Shipped setups are not affected.
+      </p>
+      <div class="modal-actions">
+        <button class="button" type="button" data-preset-confirm-cancel>Keep it</button>
+        <button class="button button-danger" type="button"
+                data-preset-confirm-delete>Delete</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal" data-result-modal hidden>
+    <div class="modal-card">
+      <p class="modal-title" data-result-title></p>
+      <p class="modal-lede" data-result-reason></p>
+
+      <div class="standings standings-final" data-result-board></div>
+
+      <p class="field-note">Match length <span class="mono"
+         data-result-duration>0s</span></p>
+
+      <p class="field-note" data-result-waiting hidden>Waiting for the host to
+        start another match.</p>
+
+      <div class="modal-actions">
+        <button class="button" type="button" data-result-leave>Leave room</button>
+        <button class="button button-primary" type="button" data-result-rematch
+                hidden>
+          Back to the lobby
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" data-over-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="over-title">
+      <button class="modal-close" type="button" data-over-close
+              aria-label="Back to setups">x</button>
+      <h2 id="over-title">Game over</h2>
+      <p class="modal-lede" data-over-reason></p>
+
+      <div class="modal-stats">
+        <div class="modal-stat">
+          <span class="hud-label">Score</span>
+          <span class="mono" data-over-score>0</span>
+        </div>
+        <div class="modal-stat">
+          <span class="hud-label">Length</span>
+          <span class="mono" data-over-length>0</span>
+        </div>
+        <div class="modal-stat">
+          <span class="hud-label">Time</span>
+          <span class="mono" data-over-duration>0s</span>
+        </div>
+        <div class="modal-stat">
+          <span class="hud-label">Best</span>
+          <span class="mono" data-over-best>0</span>
+        </div>
+      </div>
+
+      <p class="new-best" data-over-new-best hidden>New personal best for this setup.</p>
+
+      <div class="modal-actions">
+        <button class="button" type="button" data-over-quit>Change setup</button>
+        <button class="button button-primary" type="button" data-over-again>Play again</button>
+      </div>
+
+      <p class="modal-hint">Escape or the x closes this and goes back to your
+        setups.</p>
+    </div>
+  </div>
+
+  <nav class="nav" data-nav aria-label="Main">
+    <button class="nav-item" type="button" data-section="home">
+      <img src="/static/icons/home_white_20.png" alt="" width="20" height="20">
+      <span>Home</span>
+    </button>
+    <button class="nav-item" type="button" data-section="play">
+      <img src="/static/icons/play_white_20.png" alt="" width="20" height="20">
+      <span>Play</span>
+    </button>
+    <button class="nav-item" type="button" data-section="settings">
+      <img src="/static/icons/settings_white_20.png" alt="" width="20" height="20">
+      <span>Settings</span>
+    </button>
+    <button class="nav-item" type="button" data-section="about">
+      <img src="/static/icons/info_white_20.png" alt="" width="20" height="20">
+      <span>About</span>
+    </button>
+  </nav>
+
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

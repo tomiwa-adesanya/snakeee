@@ -1,0 +1,76 @@
+/* Floating bottom navigation.
+   Author-specified: floating, centred, near-pill, generously rounded, with a
+   gap beneath it rather than flush to the viewport edge. */
+
+.nav {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-5);
+  transform: translateX(-50%);
+  z-index: var(--z-nav);
+
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-2);
+
+  background: rgba(23, 29, 41, 0.92);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-lg);
+
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .nav {
+    backdrop-filter: blur(12px);
+  }
+}
+
+.nav.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(12px);
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+
+  min-width: 78px;
+  padding: var(--space-2) var(--space-4);
+
+  border-radius: var(--radius-pill);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+
+  transition: background var(--transition), color var(--transition);
+}
+
+.nav-item img {
+  opacity: 0.55;
+  transition: opacity var(--transition);
+}
+
+.nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.nav-item:hover img {
+  opacity: 0.8;
+}
+
+.nav-item.is-active {
+  background: var(--accent);
+  color: var(--text-inverse);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.nav-item.is-active img {
+  opacity: 1;
+}
