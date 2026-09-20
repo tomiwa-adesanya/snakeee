@@ -10,6 +10,14 @@ dynamic = ["dependencies"]
 [project.optional-dependencies]
 dev = ["pytest==9.1.1", "ruff==0.16.0", "pip-audit==2.10.1", "nuitka"]
 
+# Spelled out, because this is an application in a flat layout rather than a
+# library. Without it setuptools scans the project root, finds static/ and
+# installer/ sitting beside utils/, and refuses to guess which of them is the
+# package. The editable install then fails before it has installed anything,
+# which is what CI hit on its first run.
+[tool.setuptools]
+packages = ["utils", "utils.game", "utils.net", "utils.store"]
+
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
 
