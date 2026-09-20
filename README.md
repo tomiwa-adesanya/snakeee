@@ -16,6 +16,10 @@
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
+<p align="center">
+  <img src="docs/demo.gif" alt="Two players in a shared match, one cutting the other" width="640">
+</p>
+
 LAN multiplayer snake. One person hosts, reads out a short code, and everyone
 else on the same network joins. The host writes the rules of the match. No
 account, no server, no internet connection.
@@ -62,9 +66,9 @@ Binaries for the current release are on the
 | | |
 |---|---|
 | Windows, installer | `snakeee-v<version>-windows-x64-setup.exe` |
-| Windows, no install | `snakeee-v<version>-windows-x64-standalone.zip`, extract and run the `.exe` inside |
+| Windows, no install | `snakeee-v<version>-windows-x64.exe` |
 | Debian and Ubuntu | `snakeee_<version>_amd64.deb`, installed with `sudo apt install ./snakeee_<version>_amd64.deb` |
-| Linux, no install | `snakeee-v<version>-linux-x64-standalone.tar.xz`, extract and `chmod +x` the binary before the first run |
+| Linux, no install | `snakeee-v<version>-linux-x64`, which needs `chmod +x` before the first run |
 
 Everyone who wants to play needs one, on the same network. There is no separate
 server to run.
@@ -204,8 +208,10 @@ alongside `APP_VERSION` in `app.py` when you release.
    `.js`, `.css` or `.html` file. The frontend reads it from `/api/branding`.
 
 `python tools/check_ascii.py` runs both, and is what the pre-commit hook calls.
-There is no CI service configured; the hook is the only enforcement, so install
-it.
+GitHub Actions runs it again on every push and pull request, along with the
+tests and ruff, so a contributor who never installed the hook is still caught.
+Install it anyway: finding out locally is faster than finding out from a red
+pull request.
 
 ## Renaming
 
