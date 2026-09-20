@@ -1,0 +1,38 @@
+#!/bin/sh
+# Pre-commit hook: the two repository rules, checked before every commit.
+#
+# Install it with:
+#
+#     git config core.hooksPath tools/hooks
+#
+# That is one command, it is versioned with the repository, and it needs no
+# extra dependency.
+
+# Finding an interpreter is not as simple as calling python3.
+#
+# On Windows, both "python" and "python3" are App Execution Aliases that open
+# the Microsoft Store when the real interpreter is not on PATH. They exist, so
+# a plain "command -v" test finds them, and they then fail with a message about
+# the Store rather than running anything. Each candidate is therefore asked to
+# execute something trivial, and the first one that actually does is used.
+PYTHON=""
+for candidate in "py -3" python3 python; do
+    if $candidate -c "import sys" >/dev/null 2>&1; then
+        PYTHON="$candidate"
+        break
+    fi
+done
+
+if [ -z "$PYTHON" ]; then
+    echo "pre-commit: no working Python interpreter found."
+    echo ""
+    echo "Tried: py -3, python3, python."
+    echo "Activate your virtual environment, or install Python and put it on"
+    echo "PATH. On Windows, Settings > Apps > Advanced app settings > App"
+    echo "execution aliases has switches for the python.exe and python3.exe"
+    echo "shortcuts that redirect to the Microsoft Store; turning them off"
+    echo "stops them shadowing a real installation."
+    exit 1
+fi
+
+$PYTHON tools/check_ascii.py || exit 1
