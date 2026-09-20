@@ -1,0 +1,40 @@
+# What does not belong in the repository.
+#
+# The rule here is that a clone should be able to run the game, run the tests
+# and build a binary. Anything a clone can regenerate, and anything private,
+# stays out. Everything else goes in.
+
+# Python bytecode.
+__pycache__/
+*.py[cod]
+
+# The virtual environment.
+.garden/
+.venv/
+venv/
+
+# Tool caches.
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Build output. Nuitka writes the working directories beside the project and
+# leaves the finished binary in the project root; the Inno Setup compiler puts
+# the Windows setup in dist/.
+build/
+dist/
+*.build/
+*.dist/
+*.onefile-build/
+/snakeee
+/snakeee.exe
+
+# Editors and operating systems.
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs, if anybody runs the game from inside the checkout.
+*.log

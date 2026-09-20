@@ -1,0 +1,26 @@
+[project]
+name = "snakeee"
+version = "0.1.0"
+description = "LAN multiplayer snake"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Tomiwa Adesanya", email = "a.tomiwa.tech@gmail.com" }]
+dynamic = ["dependencies"]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "ruff==0.16.0", "pip-audit==2.10.1", "nuitka"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+exclude = ["static", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
