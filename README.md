@@ -62,9 +62,9 @@ Binaries for the current release are on the
 | | |
 |---|---|
 | Windows, installer | `snakeee-v<version>-windows-x64-setup.exe` |
-| Windows, no install | `snakeee-v<version>-windows-x64.exe` |
+| Windows, no install | `snakeee-v<version>-windows-x64-standalone.zip`, extract and run the `.exe` inside |
 | Debian and Ubuntu | `snakeee_<version>_amd64.deb`, installed with `sudo apt install ./snakeee_<version>_amd64.deb` |
-| Linux, no install | `snakeee-v<version>-linux-x64`, which needs `chmod +x` before the first run |
+| Linux, no install | `snakeee-v<version>-linux-x64-standalone.tar.xz`, extract and `chmod +x` the binary before the first run |
 
 Everyone who wants to play needs one, on the same network. There is no separate
 server to run.
