@@ -1,0 +1,115 @@
+name: Bug report
+description: Something does not work the way it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, please attach your log file. It is the single most useful
+        thing in a report and it contains no personal data: no account, no
+        telemetry, nothing but what the game did.
+
+        | OS | Log file |
+        |---|---|
+        | Windows | `%APPDATA%\Snakeee\logs\app.log` |
+        | macOS | `~/Library/Application Support/Snakeee/logs/app.log` |
+        | Linux | `~/.local/share/snakeee/logs/app.log` |
+
+        On Windows, paste that path into the address bar of File Explorer.
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - Debian or Ubuntu
+        - Other Linux
+        - macOS (from source)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: >-
+        Shown under Settings, and in the first line of the log file.
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it
+      options:
+        - Windows installer (snakeee-v0.1.0-windows-x64-setup.exe)
+        - Windows, no install (snakeee-v0.1.0-windows-x64.exe)
+        - Debian package (snakeee_0.1.0_amd64.deb)
+        - Linux, no install (snakeee-v0.1.0-linux-x64)
+        - Built from source
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Were you hosting or joining
+      description: >-
+        If the problem only happens in single player, choose that. Most
+        multiplayer problems are on one side of the connection only, and
+        knowing which side narrows it a long way.
+      options:
+        - Hosting the room
+        - Joining someone else's room
+        - Watching as a spectator
+        - Single player, no room involved
+        - Not sure
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: firewall
+    attributes:
+      label: Firewall
+      description: >-
+        Windows asks once, the first time you host. Blocking it leaves single
+        player working and nobody able to join, which is by far the most common
+        cause of a room that nobody can get into.
+      options:
+        - label: I am on Windows and I allowed the game on private networks
+        - label: I am on Windows and I do not know what I answered, or I blocked it
+        - label: Not applicable, I am not on Windows
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: >-
+        Numbered, from launching the game. Include the rule settings if the
+        problem only happens with particular ones.
+      placeholder: |
+        1. Open the game and go to Play, Multiplayer, Open a room
+        2. Set the layout to 2x2
+        3. Join from a second machine
+        4. Start the match
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: >-
+        Attach the log file here. Drag it onto this box, or paste the last
+        fifty lines of it.
+    validations:
+      required: true

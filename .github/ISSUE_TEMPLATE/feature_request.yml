@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest something the game should do
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        There is no fixed roadmap. If you want something, propose it here or
+        build it.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What do you want
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: >-
+        What you are trying to do, and what makes it awkward today. This is the
+        part that decides whether an idea gets built, so it is worth more than
+        the proposed solution.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: build
+    attributes:
+      label: Would you be willing to build it
+      options:
+        - Yes, I would like to try
+        - Yes, with some guidance on where to start
+        - No, I am suggesting it only
+    validations:
+      required: true

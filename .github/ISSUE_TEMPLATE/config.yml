@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question, or something you are not sure is a bug
+    url: https://github.com/tomiwa-adesanya/snakeee/discussions
+    about: >-
+      Setup help, questions about how something works, and ideas that are not
+      yet a concrete request. Discussions are a better fit than an issue, and
+      nothing gets closed for being a question.
