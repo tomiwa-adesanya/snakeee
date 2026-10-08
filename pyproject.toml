@@ -8,7 +8,11 @@ authors = [{ name = "Tomiwa Adesanya", email = "a.tomiwa.tech@gmail.com" }]
 dynamic = ["dependencies"]
 
 [project.optional-dependencies]
-dev = ["pytest==9.1.1", "ruff==0.16.0", "pip-audit==2.10.1", "nuitka"]
+dev = [
+    "pytest==9.1.1", "ruff==0.16.0", "pip-audit==2.10.1", "nuitka",
+    # Nuitka converts the PNG icon to .icns with it. macOS builds only.
+    "imageio; sys_platform == 'darwin'",
+]
 
 # Spelled out, because this is an application in a flat layout rather than a
 # library. Without it setuptools scans the project root, finds static/ and

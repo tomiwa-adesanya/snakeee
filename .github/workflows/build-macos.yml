@@ -1,0 +1,106 @@
+name: Build macOS
+
+# Builds the macOS app and attaches it to a GitHub release. build.py writes the
+# files, a zip and a setup .pkg for each of arm64 and x64, so this only runs it
+# on both kinds of Mac and uploads the result. The Windows and Linux files are
+# still added to the release by hand.
+#
+# Publishing a release builds its tag. That only fires for tags that already
+# contain this file, so a release made before it exists needs Run workflow with
+# its tag typed in, which builds the selected branch. Leave the tag empty to
+# build without publishing.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach the files to, such as v0.1.0. Blank builds only."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build for macOS ${{ matrix.label }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-latest
+            label: arm64
+          - runner: macos-15-intel
+            label: x64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        # imageio lets Nuitka turn the PNG icon into an .icns.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt nuitka imageio
+
+      - name: Build
+        run: python build.py
+
+      - name: Check the version
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          ls -l dist
+          VERSION=$(python -c "from app import APP_VERSION; print(APP_VERSION)")
+          if [ -n "$TAG" ] && [ "$TAG" != "v$VERSION" ]; then
+            echo "::warning::Tag $TAG does not match APP_VERSION $VERSION, and the files are named after APP_VERSION."
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.label }}
+          path: |
+            dist/*.zip
+            dist/*.pkg
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Keep the Nuitka crash report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuitka-crash-report-${{ matrix.label }}
+          path: nuitka-crash-report.xml
+          if-no-files-found: ignore
+
+  publish:
+    name: Attach to the release
+    needs: build
+    if: github.event_name == 'release' || inputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: macos-*
+          path: dist
+          merge-multiple: true
+
+      - name: Upload to the release
+        # --clobber makes running this again for the same release harmless.
+        run: |
+          ls -l dist
+          gh release upload "$TAG" dist/*.zip dist/*.pkg --clobber

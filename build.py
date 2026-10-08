@@ -10,23 +10,30 @@ in the applications menu with its icon and declares the webview packages pip
 cannot install, so it is the friendlier of the two for anyone who is not going
 to read a README.
 
+On macOS it builds an application bundle, dist/<name>.app, because Nuitka can
+only compile the Cocoa webview backend into a bundle. There is no single file,
+so it also writes a zip of the app and a setup .pkg beside it, which install it
+into Applications.
+
 Prerequisites:
     pip install nuitka
     - Windows : Visual Studio Build Tools (C++ workload) or MinGW64
     - macOS   : Xcode Command Line Tools  (xcode-select --install)
+                pip install imageio       (Nuitka converts the PNG icon to .icns)
     - Linux   : gcc + patchelf            (apt install gcc patchelf)
     - .deb    : dpkg-deb                  (apt install dpkg-dev)
 """
 
 import os
 import platform
+import plistlib
 import shutil
 import subprocess
 import sys
 import textwrap
 
 from app import APP_VERSION
-from utils.branding import APP_NAME, BINARY_NAME
+from utils.branding import APP_NAME, APP_SLUG, BINARY_NAME
 
 MAINTAINER = "Tomiwa Adesanya <a.tomiwa.tech@gmail.com>"
 SUMMARY = "LAN multiplayer snake"
@@ -38,6 +45,17 @@ DESCRIPTION = (
 CATEGORIES = "Game;ArcadeGame;"
 ICON_PNG = "static/icons/app/icon_256.png"
 ICON_ICO = "static/icons/app/icon.ico"
+# The Dock draws the macOS icon large, so it is converted from the biggest PNG.
+ICON_PNG_MACOS = "static/icons/app/icon_1024.png"
+ENTRY_POINT = "main.py"
+
+# Where the macOS app bundle is written. dist/ is already ignored by git.
+MACOS_OUTPUT_DIR = "dist"
+
+# What macOS keys the app's permissions to, and what lets a new setup upgrade an
+# installed copy. Like the Windows installer id it must never change, so it does
+# not follow the display name.
+MACOS_BUNDLE_ID = f"io.github.tomiwa-adesanya.{APP_SLUG}"
 
 # The webview packages pip cannot install. Listed here so that apt pulls them in
 # and the window opens on a machine that has never run the game, rather than
@@ -48,16 +66,125 @@ DEPENDS = (
 )
 
 
+def macos_arch():
+    """The architecture word used in file names: arm64 or x64, as on Windows."""
+    return "arm64" if platform.machine() == "arm64" else "x64"
+
+
+def sign_macos_bundle(bundle):
+    """Apple silicon refuses unsigned code. Nuitka signs ad hoc already, so
+    this normally only verifies, and signs only if that check fails."""
+    check = subprocess.run(
+        ["codesign", "--verify", "--deep", "--strict", bundle]
+    )
+    if check.returncode != 0:
+        subprocess.run(
+            ["codesign", "--force", "--deep", "--sign", "-", bundle],
+            check=True,
+        )
+
+
+def build_pkg(bundle, installer):
+    """Wrap the app in a package that installs it into Applications, which is
+    what puts it in Launchpad, as the Windows setup does for the Start menu."""
+    root = f"{MACOS_OUTPUT_DIR}/pkgroot"
+    components = f"{MACOS_OUTPUT_DIR}/pkg-components.plist"
+    try:
+        shutil.rmtree(root, ignore_errors=True)
+        os.makedirs(root)
+        # ditto keeps the symlinks and attributes a signed bundle depends on.
+        subprocess.run(
+            ["ditto", bundle, f"{root}/{os.path.basename(bundle)}"],
+            check=True,
+        )
+
+        # Installer treats an app as relocatable by default, so with another
+        # copy on the disk, such as the unzipped download, it would update that
+        # one and leave Applications empty.
+        subprocess.run(
+            ["pkgbuild", "--analyze", "--root", root, components], check=True
+        )
+        with open(components, "rb") as handle:
+            entries = plistlib.load(handle)
+        for entry in entries:
+            entry["BundleIsRelocatable"] = False
+        with open(components, "wb") as handle:
+            plistlib.dump(entries, handle)
+
+        subprocess.run(
+            [
+                "pkgbuild",
+                "--root", root,
+                "--component-plist", components,
+                "--install-location", "/Applications",
+                "--identifier", MACOS_BUNDLE_ID,
+                "--version", APP_VERSION,
+                installer,
+            ],
+            check=True,
+        )
+    except (OSError, subprocess.CalledProcessError) as error:
+        print(f"\npkgbuild failed ({error}). The zip is still usable.",
+              file=sys.stderr)
+        return None
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+        if os.path.exists(components):
+            os.remove(components)
+
+    return installer
+
+
+def package_macos(bundle):
+    """Write the no-install zip and the setup package beside the bundle."""
+    stem = f"{MACOS_OUTPUT_DIR}/{BINARY_NAME}-v{APP_VERSION}-macos-{macos_arch()}"
+    archive = f"{stem}.zip"
+    installer = f"{stem}-setup.pkg"
+
+    print("\nPackaging for macOS ...")
+    sign_macos_bundle(bundle)
+
+    subprocess.run(
+        ["ditto", "-c", "-k", "--keepParent", bundle, archive], check=True
+    )
+    print(f"  zip      -> {archive}")
+
+    if build_pkg(bundle, installer):
+        print(f"  setup    -> {installer}")
+        print("\nSetup package ready. Double click it to install into Applications.")
+
+
 def run_build():
     system = platform.system()
     print(f"Building {APP_NAME} v{APP_VERSION} for {system} ...")
+
+    if system == "Darwin":
+        # pywebview reaches Cocoa through PyObjC, which Nuitka will only compile
+        # into an application bundle ("package 'Foundation' requires
+        # '--mode=app'"). A bundle cannot be one file, and the folder name below
+        # names it after the game rather than after the entry script.
+        output_mode = [
+            "--mode=app",
+            f"--output-dir={MACOS_OUTPUT_DIR}",
+            f"--output-folder-name={APP_NAME}",
+        ]
+        naming = [
+            f"--macos-app-name={APP_NAME}",
+            f"--macos-app-version={APP_VERSION}",
+            f"--macos-signed-app-name={MACOS_BUNDLE_ID}",
+        ]
+    else:
+        output_mode = [
+            "--standalone",                 # Bundle interpreter + deps.
+            "--onefile",                    # Single self-extracting binary.
+        ]
+        naming = [f"--output-filename={BINARY_NAME}"]
 
     cmd = [
         sys.executable, "-m", "nuitka",
 
         # -- Output mode ------------------------------------------
-        "--standalone",                     # Bundle interpreter + deps.
-        "--onefile",                        # Single self-extracting binary.
+        *output_mode,
 
         # -- Data files -------------------------------------------
         "--include-data-dir=./static=static",
@@ -70,7 +197,7 @@ def run_build():
         "--nofollow-import-to=tkinter",
 
         # -- Binary name + metadata -------------------------------
-        f"--output-filename={BINARY_NAME}",
+        *naming,
         f"--product-version={APP_VERSION}",
         f"--product-name={APP_NAME}",
     ]
@@ -84,14 +211,14 @@ def run_build():
         cmd.append(f"--windows-icon-from-ico={ICON_ICO}")
 
     elif system == "Darwin":
-        cmd.append(f"--macos-app-icon={ICON_PNG}")
+        cmd.append(f"--macos-app-icon={ICON_PNG_MACOS}")
 
     elif system == "Linux":
         # No console flag needed on Linux. Set the icon for desktop entries.
         cmd.append(f"--linux-icon={ICON_PNG}")
 
     # -- Entry point ----------------------------------------------
-    cmd.append("main.py")
+    cmd.append(ENTRY_POINT)
 
     print("Running:")
     print("  " + " \\\n    ".join(cmd))
@@ -101,6 +228,15 @@ def run_build():
     if result.returncode != 0:
         print(f"\nBuild failed (exit code {result.returncode}).", file=sys.stderr)
         sys.exit(result.returncode)
+
+    if system == "Darwin":
+        bundle = f"{MACOS_OUTPUT_DIR}/{APP_NAME}.app"
+        if not os.path.isdir(bundle):
+            print(f"\nBuild reported success but {bundle} is not here.",
+                  file=sys.stderr)
+            sys.exit(1)
+        print(f"\nBuild succeeded.  App bundle: {bundle}  (v{APP_VERSION})")
+        return bundle
 
     ext = ".exe" if system == "Windows" else ""
     binary = f"{BINARY_NAME}{ext}"
@@ -216,3 +352,5 @@ if __name__ == "__main__":
     if want_deb:
         os.makedirs("dist", exist_ok=True)
         build_deb(built)
+    elif platform.system() == "Darwin":
+        package_macos(built)

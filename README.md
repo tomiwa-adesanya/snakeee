@@ -69,6 +69,10 @@ Binaries for the current release are on the
 | Windows, no install | `snakeee-v<version>-windows-x64.exe` |
 | Debian and Ubuntu | `snakeee_<version>_amd64.deb`, installed with `sudo apt install ./snakeee_<version>_amd64.deb` |
 | Linux, no install | `snakeee-v<version>-linux-x64`, which needs `chmod +x` before the first run |
+| macOS, installer | `snakeee-v<version>-macos-<arch>-setup.pkg`, which installs it into Applications |
+| macOS, no install | `snakeee-v<version>-macos-<arch>.zip` |
+
+On macOS `<arch>` is `arm64` for Apple silicon and `x64` for Intel Macs.
 
 Everyone who wants to play needs one, on the same network. There is no separate
 server to run.
@@ -77,8 +81,18 @@ The `.deb` is the easier of the two Linux downloads: it puts the game in the
 applications menu and pulls in the webview packages listed below, which the
 plain binary expects you to install yourself.
 
-Neither binary is code signed, so Windows SmartScreen will warn on first run.
+None of these is code signed, so Windows SmartScreen will warn on first run.
 Choose More info, then Run anyway, or build it yourself from source below.
+
+None of the macOS downloads is signed or notarized, so macOS blocks the first
+launch of the app, or of the setup package. Try to open it once and dismiss the
+warning, then open System Settings, Privacy and Security, scroll to the message
+about it and choose Open Anyway. Opening it again asks once more, and after that
+it starts normally. From a terminal, this removes the block in one step:
+
+    xattr -dr com.apple.quarantine /Applications/Snakeee.app
+
+Use the path of the downloaded file instead for the zip or the setup package.
 
 ## Run from source
 
@@ -171,9 +185,15 @@ before changing anything in `utils/net/` or `utils/game/match.py`.
     python build.py
 
 The script looks at the machine it is running on and builds for that: a single
-`.exe` with no console window on Windows, a single executable on Linux.
+`.exe` with no console window on Windows, a single executable on Linux, and an
+application bundle on macOS. macOS also needs `pip install imageio`, which
+Nuitka uses to turn the PNG icon into an `.icns`.
 
-The binary lands in the project root. On Linux the script also offers to
+The binary lands in the project root. On macOS the bundle is `dist/Snakeee.app`
+instead, because Nuitka can only compile the Cocoa webview backend into a
+bundle, and a bundle cannot be a single file. The script also writes a zip of
+the app and a setup `.pkg` beside it in `dist/`, which installs it into
+Applications. On Linux the script also offers to
 package it as a `.deb`, which needs `dpkg-deb`:
 
     sudo apt install dpkg-dev
@@ -198,6 +218,15 @@ script that wraps the built `.exe` into an installer. Build first, then:
 Every path in it is relative, so it compiles from a clone with nothing to edit.
 The version comes from `installer/version.iss`, which is not generated: bump it
 alongside `APP_VERSION` in `app.py` when you release.
+
+### The macOS build
+
+`.github/workflows/build-macos.yml` builds the app on GitHub's macOS machines,
+one for Apple silicon and one for Intel, so nobody needs a Mac to release for
+one. It runs when you publish a release, and attaches the zip and the setup
+package for each of them to that release. To attach a build to a release that already exists, open Actions,
+choose Build macOS, Run workflow, and type the release's tag. Leave the tag
+empty to build without publishing anything; the files are kept on the run page.
 
 ## Two rules the pre-commit hook enforces
 
